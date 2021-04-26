@@ -1,0 +1,42 @@
+﻿apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weatherapi
+  labels:
+    app: weatherapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: weatherapi
+  template:
+    metadata:
+      labels:
+        app: weatherapi
+        service: weatherapi
+    spec:
+      containers:
+        - name: weatherapi
+          image: weatherapi.azurecr.io/weatherapi:v1
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          env:
+            - name: ASPNETCORE_URLS
+              value: http://+:80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: weatherapi
+  labels:
+    app: weatherapi
+    service: weatherapi
+spec:
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+  selector:
+    service: weatherapi
